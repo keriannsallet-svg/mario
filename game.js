@@ -691,6 +691,7 @@ function startGame() {
     document.getElementById('timer').textContent = '300';
     document.getElementById('overlay').classList.add('hidden');
     document.getElementById('gameOver').classList.add('hidden');
+    document.getElementById('winScreen').classList.add('hidden');
 
     startTimer();
     gameLoop();
