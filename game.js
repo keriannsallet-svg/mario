@@ -213,10 +213,10 @@ function getTile(x, y) {
 }
 
 function resolveCollisionX() {
-    const top = player.y;
-    const bottom = player.y + player.height;
+    const top = player.y + 1;
+    const bottom = player.y + player.height - 1;
     const left = player.x;
-    const right = player.x + player.width;
+    const right = player.x + player.width - 1;
 
     for (let y = Math.floor(top / TILE_SIZE); y <= Math.floor(bottom / TILE_SIZE); y++) {
         for (let x = Math.floor(left / TILE_SIZE); x <= Math.floor(right / TILE_SIZE); x++) {
@@ -235,10 +235,10 @@ function resolveCollisionX() {
 }
 
 function resolveCollisionY() {
-    const left = player.x;
-    const right = player.x + player.width;
+    const left = player.x + 1;
+    const right = player.x + player.width - 1;
     const top = player.y;
-    const bottom = player.y + player.height;
+    const bottom = player.y + player.height - 1;
 
     for (let y = Math.floor(top / TILE_SIZE); y <= Math.floor(bottom / TILE_SIZE); y++) {
         for (let x = Math.floor(left / TILE_SIZE); x <= Math.floor(right / TILE_SIZE); x++) {
