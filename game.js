@@ -146,14 +146,21 @@ document.addEventListener('keyup', e => {
 
 // Physique
 function updatePlayer() {
-    // Mouvement horizontal
+    // Friction en premier (décélération quand pas d'input)
+    player.vx *= FRICTION;
+    if (Math.abs(player.vx) < 0.1) {
+        player.vx = 0;
+        player.moving = false;
+    }
+
+    // Mouvement horizontal (accélération APRES friction)
     if (keys['ArrowLeft'] || keys['KeyA']) {
-        player.vx -= MOVE_SPEED * 0.3;
+        player.vx -= 1.2;
         player.facing = -1;
         player.moving = true;
     }
     if (keys['ArrowRight'] || keys['KeyD']) {
-        player.vx += MOVE_SPEED * 0.3;
+        player.vx += 1.2;
         player.facing = 1;
         player.moving = true;
     }
@@ -165,12 +172,7 @@ function updatePlayer() {
         createParticles(player.x + player.width / 2, player.y + player.height, '#aaa', 5);
     }
 
-    // Friction et gravité
-    player.vx *= FRICTION;
-    if (Math.abs(player.vx) < 0.1) {
-        player.vx = 0;
-        player.moving = false;
-    }
+    // Gravité
     player.vy += GRAVITY;
 
     // Limiter la vitesse
