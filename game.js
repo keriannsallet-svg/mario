@@ -118,6 +118,15 @@ function spawnEnemies() {
     });
 }
 
+// Drapeau de fin
+const flag = {
+    x: MAP_WIDTH * TILE_SIZE - 80,
+    y: (MAP_HEIGHT - 2) * TILE_SIZE - 80,
+    width: 10,
+    height: 80,
+    reached: false
+};
+
 // Particules
 let particles = [];
 
@@ -204,6 +213,15 @@ function updatePlayer() {
     // Chute dans le vide
     if (player.y > canvas.height + 100) {
         loseLife();
+    }
+
+    // Victoire - atteindre le drapeau
+    if (!flag.reached &&
+        player.x + player.width > flag.x &&
+        player.x < flag.x + flag.width &&
+        player.y + player.height > flag.y) {
+        flag.reached = true;
+        winGame();
     }
 }
 
@@ -380,6 +398,9 @@ function draw() {
     // Tuiles
     drawTiles();
 
+    // Drapeau de fin
+    drawFlag();
+
     // Pièces
     drawCoins();
 
@@ -511,6 +532,32 @@ function drawPlayer() {
     ctx.restore();
 }
 
+function drawFlag() {
+    const wave = Math.sin(frameCount * 0.1) * 5;
+
+    // Mât
+    ctx.fillStyle = '#666';
+    ctx.fillRect(flag.x, flag.y, 4, flag.height);
+
+    // Drapeau
+    ctx.fillStyle = '#e94560';
+    ctx.beginPath();
+    ctx.moveTo(flag.x + 4, flag.y);
+    ctx.lineTo(flag.x + 50, flag.y + 20 + wave);
+    ctx.lineTo(flag.x + 4, flag.y + 40);
+    ctx.closePath();
+    ctx.fill();
+
+    // Étoile sur le drapeau
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 14px monospace';
+    ctx.fillText('★', flag.x + 15, flag.y + 26 + wave / 2);
+
+    // Socle
+    ctx.fillStyle = '#444';
+    ctx.fillRect(flag.x - 5, flag.y + flag.height - 5, 14, 5);
+}
+
 function drawCoins() {
     coins.forEach(coin => {
         if (coin.collected) return;
@@ -629,6 +676,7 @@ function startGame() {
     timer = 300;
     cameraX = 0;
     particles = [];
+    flag.reached = false;
 
     player.x = 100;
     player.y = 200;
@@ -655,5 +703,15 @@ function gameOver() {
     document.getElementById('gameOver').classList.remove('hidden');
 }
 
+function winGame() {
+    gameRunning = false;
+    stopTimer();
+    score += timer * 10; // Bonus de temps restant
+    document.getElementById('winScore').textContent = score;
+    document.getElementById('winScreen').classList.remove('hidden');
+    createParticles(player.x + player.width / 2, player.y, '#f1c40f', 30);
+}
+
 document.getElementById('startBtn').addEventListener('click', startGame);
 document.getElementById('restartBtn').addEventListener('click', startGame);
+document.getElementById('winRestartBtn').addEventListener('click', startGame);
