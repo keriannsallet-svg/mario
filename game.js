@@ -110,6 +110,8 @@ function spawnEnemies() {
             width: 32,
             height: 32,
             vx: -1.5,
+            vy: 0,
+            onGround: true,
             alive: true,
             frame: 0,
             startX: pos.x,
@@ -288,7 +290,6 @@ function updateEnemies() {
     enemies.forEach(enemy => {
         if (!enemy.alive) return;
 
-        enemy.x += enemy.vx;
         enemy.frame += 0.15;
 
         // Patrouille
@@ -296,10 +297,25 @@ function updateEnemies() {
             enemy.vx *= -1;
         }
 
-        // Collision avec le sol
-        const onGround = getTile(enemy.x + enemy.width / 2, enemy.y + enemy.height + 2) > 0;
-        if (!onGround) {
-            enemy.x -= enemy.vx;
+        // Appliquer gravité
+        enemy.vy += GRAVITY;
+        enemy.vy = Math.min(12, enemy.vy);
+
+        // Déplacement vertical avec collision sol
+        enemy.y += enemy.vy;
+        const belowTile = getTile(enemy.x + enemy.width / 2, enemy.y + enemy.height + 1);
+        if (enemy.vy > 0 && belowTile > 0) {
+            enemy.y = Math.floor((enemy.y + enemy.height) / TILE_SIZE) * TILE_SIZE - enemy.height;
+            enemy.vy = 0;
+            enemy.onGround = true;
+        } else if (belowTile === 0) {
+            enemy.onGround = false;
+        }
+
+        // Déplacement horizontal avec collision murs
+        enemy.x += enemy.vx;
+        const frontTile = getTile(enemy.x + (enemy.vx > 0 ? enemy.width + 1 : -1), enemy.y + enemy.height / 2);
+        if (frontTile > 0) {
             enemy.vx *= -1;
         }
 
@@ -595,32 +611,41 @@ function drawEnemies() {
         ctx.save();
         ctx.translate(enemy.x, enemy.y + bounce);
 
-        // Corps
-        ctx.fillStyle = '#8B4513';
-        ctx.fillRect(2, 8, 28, 22);
+        // Carapace (verte, arrondie comme une Koopa)
+        ctx.fillStyle = '#27ae60';
+        ctx.beginPath();
+        ctx.arc(16, 16, 13, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = '#2ecc71';
+        ctx.beginPath();
+        ctx.arc(16, 14, 9, 0, Math.PI * 2);
+        ctx.fill();
+        // Liseré blanc de la carapace
+        ctx.strokeStyle = '#fff';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(16, 16, 13, 0, Math.PI * 2);
+        ctx.stroke();
 
-        // Tête
-        ctx.fillStyle = '#a0522d';
-        ctx.fillRect(4, 0, 24, 14);
+        // Tête (jaune, dépasse de la carapace)
+        ctx.fillStyle = '#f1c40f';
+        ctx.beginPath();
+        ctx.arc(16, -2, 8, 0, Math.PI * 2);
+        ctx.fill();
 
-        // Yeux
-        ctx.fillStyle = '#fff';
-        ctx.fillRect(8, 4, 6, 6);
-        ctx.fillRect(18, 4, 6, 6);
+        // Œil
         ctx.fillStyle = '#000';
-        ctx.fillRect(10, 6, 3, 3);
-        ctx.fillRect(20, 6, 3, 3);
+        ctx.fillRect(20, -5, 4, 4);
 
-        // Sourcils
-        ctx.fillStyle = '#000';
-        ctx.fillRect(7, 2, 8, 2);
-        ctx.fillRect(17, 2, 8, 2);
+        // Bouche
+        ctx.fillStyle = '#d35400';
+        ctx.fillRect(18, 4, 8, 3);
 
         // Pieds
-        ctx.fillStyle = '#5d3a1a';
-        const footOffset = Math.sin(enemy.frame * 2) * 2;
-        ctx.fillRect(2 + footOffset, 30, 10, 2);
-        ctx.fillRect(20 - footOffset, 30, 10, 2);
+        ctx.fillStyle = '#f39c12';
+        const footOffset = Math.sin(enemy.frame * 2) * 3;
+        ctx.fillRect(4 + footOffset, 28, 8, 4);
+        ctx.fillRect(20 - footOffset, 28, 8, 4);
 
         ctx.restore();
     });
