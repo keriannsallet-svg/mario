@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Super Mario</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="game-container">
+        <canvas id="gameCanvas" width="800" height="450"></canvas>
+        <div id="hud">
+            <div class="hud-item">SCORE: <span id="score">0</span></div>
+            <div class="hud-item">VIES: <span id="lives">3</span></div>
+            <div class="hud-item">TEMPS: <span id="timer">300</span></div>
+        </div>
+        <div id="overlay" class="overlay">
+            <h1>SUPER MARIO</h1>
+            <p>Flèches pour se déplacer, ESPACE pour sauter</p>
+            <button id="startBtn">JOUER</button>
+        </div>
+        <div id="gameOver" class="overlay hidden">
+            <h1>GAME OVER</h1>
+            <p>Score: <span id="finalScore">0</span></p>
+            <button id="restartBtn">REJOUER</button>
+        </div>
+    </div>
+    <script src="game.js"></script>
+</body>
+</html>
